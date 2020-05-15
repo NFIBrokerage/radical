@@ -4,6 +4,9 @@
 
 playground for EventStore persistent subscriptions
 
+goal for this lib: use [`Broadway`](https://hexdocs.pm/broadway/Broadway.html)
+to implement persistent subscriptions with EventStore
+
 ## Installation
 
 ```elixir
