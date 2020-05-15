@@ -34,11 +34,18 @@ defmodule Radical.MixProject do
   defp elixirc_paths(_), do: ["lib"]
 
   def application do
-    []
+    [
+      extra_applications: [:logger],
+      mod: {Radical.Application, []}
+    ]
   end
 
   defp deps do
     [
+      {:extreme, path: "../extreme", override: true},
+      # {:ex_stream, "~> 1.0", organization: "cuatro"},
+      {:broadway, "~> 0.6"},
+      {:jason, ">= 0.0.0"},
       # docs
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       # test
