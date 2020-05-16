@@ -5,7 +5,9 @@ defmodule Radical.Producer do
 
   use GenStage
 
-  import Logger, only: [debug: 1]
+  alias Extreme.Messages.PersistentSubscriptionStreamEventAppeared
+
+  require Logger
 
   alias Broadway.Message
 
@@ -20,39 +22,36 @@ defmodule Radical.Producer do
   end
 
   def handle_info(:subscribe, state) do
-    {:ok, subscription} = 
-      Extreme.connect_to_persistent_subscription(EventStore, self(), "v2", "$ce-IdentityService.Profile.dev", 15)
+    {:ok, subscription} =
+      EventStore.connect_to_persistent_subscription(
+        state.stream,
+        state.group,
+        self(),
+        state.allowed_in_flight_messages
+      )
 
     {:noreply, [], Map.put(state, :subscription, subscription)}
   end
 
   def handle_info({:on_event, event, correlation_id}, state) do
-    debug("#{inspect(__MODULE__)} got event #{inspect(event)}")
+    Logger.debug("#{inspect(__MODULE__)} got event #{inspect(event)}")
 
     {:noreply, Enum.map([event], &transform(&1, correlation_id)), state}
   end
 
-  def handle_cast({:ack, successful, failed} = msg, %{subscription: subscription_proc} = state) do
-    successful
-    |> Enum.each(fn %{correlation_id: correlation_id, event_id: event_id} ->
-      :ok = Extreme.PersistentSubscription.ack(subscription_proc, event_id, correlation_id)
-    end)
-
-    failed
-    |> Enum.each(fn %{correlation_id: correlation_id, event_id: event_id} ->
-      :ok = Extreme.PersistentSubscription.nack(subscription_proc, event_id, correlation_id, :Retry)
-    end)
+  def handle_info({:ack, _successful, _failed} = msg, %{subscription: subscription_proc} = state) do
+    send(subscription_proc, msg)
 
     {:noreply, [], state}
   end
 
   def handle_demand(_demand, state), do: {:noreply, [], state}
 
-  def transform(event, correlation_id) do
+  def transform(%PersistentSubscriptionStreamEventAppeared{event: event}, correlation_id) do
     %Message{
       data: event,
       metadata: %{correlation_id: correlation_id},
-      acknowledger: {Radical.Ack, :ack_id, %{producer: self()}}
+      acknowledger: {Radical.Ack, self(), []}
     }
   end
 end

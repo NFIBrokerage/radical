@@ -42,8 +42,8 @@ defmodule Radical.MixProject do
 
   defp deps do
     [
-      {:extreme, path: "../extreme", override: true},
-      # {:ex_stream, "~> 1.0", organization: "cuatro"},
+      {:extreme, path: "../extm", override: true},
+      {:ex_stream, "~> 1.0", organization: "cuatro"},
       {:broadway, "~> 0.6"},
       {:jason, ">= 0.0.0"},
       # docs

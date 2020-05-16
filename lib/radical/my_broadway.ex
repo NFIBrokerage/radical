@@ -4,10 +4,13 @@ defmodule Radical.MyBroadway do
   alias Broadway.Message
 
   def start_link(_opts) do
+    producer_opts =
+      Application.fetch_env!(:radical, :persistent_subscription)
+
     Broadway.start_link(__MODULE__,
       name: __MODULE__,
       producer: [
-        module: {Radical.Producer, []}
+        module: {Radical.Producer, producer_opts}
       ],
       processors: [
         default: [concurrency: 1]
@@ -16,7 +19,17 @@ defmodule Radical.MyBroadway do
   end
 
   @impl Broadway
-  def handle_message(_processor, %Message{} = message, _context) do
-    IO.inspect(message, label: "message")
+  def handle_message(_processor, %Message{data: event} = message, _context) do
+    payload = decode_subscription_event(event)
+
+    Process.sleep(500)
+
+    IO.inspect(payload)
+
+    message
+  end
+
+  defp decode_subscription_event(%{event: %{data: json_data}}) do
+    Jason.decode!(json_data, keys: :atoms)
   end
 end

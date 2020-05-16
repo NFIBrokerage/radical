@@ -1,5 +1,5 @@
-# defmodule EventStore do
-#   use ExStream
+defmodule EventStore do
+  use ExStream
 
-#   @moduledoc false
-# end
+  @moduledoc false
+end

@@ -12,4 +12,9 @@ config :radical, EventStore,
 
 config :extreme, :protocol_version, 4
 
-# config :logger, level: :info
+config :logger, level: :info
+
+config :radical, :persistent_subscription,
+  stream: "$ce-IdentityService.Profile.dev",
+  group: "v2",
+  allowed_in_flight_messages: 1

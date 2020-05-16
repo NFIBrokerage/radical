@@ -5,20 +5,17 @@ defmodule Radical.Ack do
 
   alias Broadway.Message
 
-  alias Extreme.Msg.{
-    PersistentSubscriptionStreamEventAppeared,
+  alias Extreme.Messages.{
     ResolvedIndexedEvent,
     EventRecord
   }
 
   require Logger
 
-  def ack(:ack_id, successful, failed) do
-    Logger.debug("#{inspect(__MODULE__)} handling successful #{inspect(successful)} and failed #{inspect(failed)}")
+  def ack(producer, successful, failed) do
+    Logger.debug("#{inspect(__MODULE__)} acking successful #{inspect(successful)} and nacking failed #{inspect(failed)}")
 
-    producer = producer_proc(successful, failed)
-
-    :ok = GenServer.cast(producer, {:ack, take_ack_data(successful), take_ack_data(failed)})
+    send(producer, {:ack, take_ack_data(successful), take_ack_data(failed)})
   end
 
   defp take_ack_data(events) when is_list(events) do
@@ -27,7 +24,4 @@ defmodule Radical.Ack do
 
   defp take_ack_data(%Message{metadata: %{correlation_id: correlation_id}, data: %ResolvedIndexedEvent{link: %EventRecord{event_id: event_id}}}), do: %{event_id: event_id, correlation_id: correlation_id}
   defp take_ack_data(%Message{metadata: %{correlation_id: correlation_id}, data: %ResolvedIndexedEvent{event: %EventRecord{event_id: event_id}}}), do: %{event_id: event_id, correlation_id: correlation_id}
-
-  defp producer_proc([%Message{acknowledger: {__MODULE__, _ack_ref, %{producer: producer_pid}}} | _], _failed), do: producer_pid
-  defp producer_proc(_successful, [%Message{acknowledger: {__MODULE__, _ack_ref, %{producer: producer_pid}}} | _]), do: producer_pid
 end

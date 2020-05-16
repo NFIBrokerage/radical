@@ -3,11 +3,9 @@ defmodule Radical.Application do
 
   use Application
 
-  import Supervisor.Spec
-
   def start(_type, _args) do
     children = [
-      worker(Extreme, [Application.fetch_env!(:radical, EventStore), [name: EventStore]]),
+      {EventStore, Application.fetch_env!(:radical, EventStore)},
       {Radical.MyBroadway, []}
     ]
 
