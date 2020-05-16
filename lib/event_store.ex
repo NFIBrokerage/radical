@@ -1,5 +1,5 @@
 defmodule EventStore do
-  use ExStream
+  use Extreme
 
   @moduledoc false
 end
