@@ -4,8 +4,7 @@ defmodule Radical.MyBroadway do
   alias Broadway.Message
 
   def start_link(_opts) do
-    producer_opts =
-      Application.fetch_env!(:radical, :persistent_subscription)
+    producer_opts = Application.fetch_env!(:radical, :persistent_subscription)
 
     Broadway.start_link(__MODULE__,
       name: __MODULE__,
@@ -24,7 +23,7 @@ defmodule Radical.MyBroadway do
 
     Process.sleep(500)
 
-    IO.inspect(payload)
+    IO.inspect(payload.profile_id, label: "received event")
 
     message
   end
