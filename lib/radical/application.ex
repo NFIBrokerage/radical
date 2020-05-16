@@ -6,7 +6,7 @@ defmodule Radical.Application do
   def start(_type, _args) do
     children = [
       {EventStore, Application.fetch_env!(:radical, EventStore)},
-      {Radical.MyBroadway, []}
+      {Radical.Handler, []}
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one)

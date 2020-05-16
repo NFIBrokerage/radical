@@ -1,4 +1,4 @@
-defmodule Radical.MyBroadway do
+defmodule Radical.Handler do
   use Broadway
 
   alias Broadway.Message
