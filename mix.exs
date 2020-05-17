@@ -1,18 +1,10 @@
 defmodule Radical.MixProject do
   use Mix.Project
 
-  {git_tag, _return_code} =
-    System.cmd("git", ["describe", "--abbrev=0", "--tags"])
-
-  @version (case Regex.run(~r/^v([\d\.]+)/, git_tag, capture: :all_but_first) do
-              [version] -> version
-              nil -> "0.0.0"
-            end)
-
   def project do
     [
       app: :radical,
-      version: @version,
+      version: "0.0.0",
       elixir: "~> 1.6",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
@@ -34,11 +26,17 @@ defmodule Radical.MixProject do
   defp elixirc_paths(_), do: ["lib"]
 
   def application do
-    []
+    [
+      extra_applications: [:logger],
+      mod: {Radical.Application, []}
+    ]
   end
 
   defp deps do
     [
+      {:extreme, path: "../extm", override: true},
+      {:broadway, "~> 0.6"},
+      {:jason, ">= 0.0.0"},
       # docs
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       # test
