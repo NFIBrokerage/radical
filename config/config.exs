@@ -15,6 +15,6 @@ config :extreme, :protocol_version, 4
 config :logger, level: :info
 
 config :radical, :persistent_subscription,
-  stream: "$ce-IdentityService.Profile.dev",
-  group: "v2",
+  stream: "CounterService.Count",
+  group: "my_group",
   allowed_in_flight_messages: 1

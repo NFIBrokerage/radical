@@ -23,7 +23,7 @@ defmodule Radical.Handler do
 
     Process.sleep(500)
 
-    IO.inspect(payload.profile_id, label: "received event")
+    IO.inspect(payload.count_id, label: "received event")
 
     message
   end
