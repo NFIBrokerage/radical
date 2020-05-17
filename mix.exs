@@ -34,7 +34,7 @@ defmodule Radical.MixProject do
 
   defp deps do
     [
-      {:extreme, path: "../extm", override: true},
+      {:extreme, git: "git@github.com:the-mikedavis/extreme.git", branch: "persistent-subscription"},
       {:broadway, "~> 0.6"},
       {:jason, ">= 0.0.0"},
       # docs
