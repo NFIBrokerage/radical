@@ -14,7 +14,7 @@ defmodule Radical.Producer do
   end
 
   def init(opts) do
-    GenServer.cast(self(), :subscribe)
+    GenStage.cast(self(), :subscribe)
 
     {:producer, Map.new(opts)}
   end
